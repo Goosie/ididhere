@@ -62,7 +62,7 @@ export async function gansjeTippyHandler(c: Context) {
   try {
     const response = await client.messages.create({
       model: 'claude-opus-4-7',
-      max_tokens: 2048,
+      max_tokens: 4096,
       thinking: { type: 'adaptive' },
       system: [
         {
@@ -82,13 +82,29 @@ Al bekende tips om te vermijden: ${skipNames}`,
     });
 
     const textBlock = response.content.find((b) => b.type === 'text');
-    const text = textBlock && textBlock.type === 'text' ? textBlock.text : '';
+    const raw = textBlock && textBlock.type === 'text' ? textBlock.text : '';
+
+    // Strip markdown code fences als het model die toch toevoegt
+    const text = raw
+      .replace(/^```(?:json)?\s*/i, '')
+      .replace(/\s*```\s*$/, '')
+      .trim();
 
     let parsed: { tips: Tip[] };
     try {
       parsed = JSON.parse(text);
     } catch {
-      return c.json({ error: 'Parse error', raw: text }, 500);
+      // Laatste poging: zoek het eerste JSON-object in de tekst
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) {
+        try {
+          parsed = JSON.parse(match[0]);
+        } catch {
+          return c.json({ error: 'Parse error', raw }, 500);
+        }
+      } else {
+        return c.json({ error: 'Parse error', raw }, 500);
+      }
     }
 
     if (!Array.isArray(parsed.tips)) {
