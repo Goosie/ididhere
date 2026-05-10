@@ -45,8 +45,8 @@ export default function S05Map() {
   const [posError, setPosError] = useState(false);
   const allLocations = useLocationStore((s) => s.locations);
 
-  // Amsterdam centrum als fallback startpositie
-  const center = userPos ?? { lat: 52.3760, lon: 4.9041 };
+  // Nieuw-Vennep als fallback startpositie
+  const center = userPos ?? { lat: 52.2678, lon: 4.6358 };
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -83,7 +83,7 @@ export default function S05Map() {
         <span className="text-2xl">🪿</span>
         <div className="flex items-center gap-3">
           <button className="flex items-center gap-1 text-sm text-white/70 hover:text-white">
-            Amsterdam <span className="text-white/30">▾</span>
+            Nieuw-Vennep <span className="text-white/30">▾</span>
           </button>
           <button
             onClick={() => navigate('/trip/new')}
@@ -144,7 +144,7 @@ export default function S05Map() {
 
         {posError && (
           <div className="absolute bottom-2 left-2 right-2 rounded-lg bg-black/70 px-3 py-2 text-xs text-white/60">
-            GPS niet beschikbaar — kaart gecentreerd op Amsterdam
+            GPS niet beschikbaar — kaart gecentreerd op Nieuw-Vennep
           </div>
         )}
       </div>

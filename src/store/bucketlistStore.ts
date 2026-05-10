@@ -20,28 +20,28 @@ interface BucketlistState {
 
 const MOCK_ITEMS: BucketItem[] = [
   {
-    id: 'mock-1', locationId: 'u173z-begijnhof',
-    locationName: 'Begijnhof',
-    category: 'hidden', status: 'todo', privacy: 'public', trip: 'Amsterdam 2026',
+    id: 'mock-1', locationId: 'u172s-dorpstraat-35',
+    locationName: 'Dorpstraat 35',
+    category: 'hidden', status: 'todo', privacy: 'public', trip: 'Nieuw-Vennep 2026',
   },
   {
-    id: 'mock-2', locationId: 'u173z-cafe-t-smalle',
-    locationName: "Café 't Smalle",
-    category: 'nightlife', status: 'todo', privacy: 'private', trip: 'Amsterdam 2026',
+    id: 'mock-2', locationId: 'u172s-buurtcafe-de-molen',
+    locationName: 'Buurtcafé De Molen',
+    category: 'nightlife', status: 'todo', privacy: 'private', trip: 'Nieuw-Vennep 2026',
   },
   {
-    id: 'mock-3', locationId: 'u17pw-ndsm-werf',
-    locationName: 'NDSM-werf',
+    id: 'mock-3', locationId: 'u172s-de-dorpskerk',
+    locationName: 'De Dorpskerk',
     category: 'culture', status: 'todo', privacy: 'public', trip: null,
   },
   {
-    id: 'mock-4', locationId: 'u173m-vondelpark',
-    locationName: 'Vondelpark — openluchttheater',
-    category: 'nature', status: 'done', privacy: 'public', trip: 'Amsterdam 2026',
+    id: 'mock-4', locationId: 'u172s-polderpark',
+    locationName: 'Polderpark Nieuw-Vennep',
+    category: 'nature', status: 'done', privacy: 'public', trip: 'Nieuw-Vennep 2026',
   },
   {
-    id: 'mock-5', locationId: 'u173y-albert-cuypmarkt',
-    locationName: 'Albert Cuypmarkt',
+    id: 'mock-5', locationId: 'u172s-groenteboer-vennep',
+    locationName: 'Groenteboer Vennep',
     category: 'market', status: 'done', privacy: 'friends', trip: null,
   },
 ];
@@ -74,6 +74,6 @@ export const useBucketlistStore = create<BucketlistState>()(
       remove: (id) =>
         set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
     }),
-    { name: 'ididhere-bucketlist-v2' },
+    { name: 'ididhere-bucketlist-v3' },
   ),
 );

@@ -20,6 +20,6 @@ export const useLocationStore = create<LocationState>()(
           ],
         })),
     }),
-    { name: 'ididhere-locations-v2' },
+    { name: 'ididhere-locations-v3' },
   ),
 );

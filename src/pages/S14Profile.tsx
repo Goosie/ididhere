@@ -9,16 +9,16 @@ const RARITY = ['', 'Gewoon', 'Zeldzaam', 'Epic', 'Legendary'];
 // Mock ganzencollectie — wordt vervangen door Nostr relay fetch (kind-37516)
 const MOCK_GEESE = [
   {
-    id: 'g1', locationName: 'Begijnhof',
-    geohash: 'u173zbx', level: 3 as const, date: '8 mei 2026',
+    id: 'g1', locationName: 'Dorpstraat 35',
+    geohash: 'u172sbx', level: 4 as const, date: '10 mei 2026',
   },
   {
-    id: 'g2', locationName: "Café 't Smalle",
-    geohash: 'u173zqp', level: 2 as const, date: '7 mei 2026',
+    id: 'g2', locationName: 'Buurtcafé De Molen',
+    geohash: 'u172sqp', level: 2 as const, date: '10 mei 2026',
   },
   {
-    id: 'g3', locationName: 'Albert Cuypmarkt',
-    geohash: 'u173ymn', level: 1 as const, date: '2 mei 2026',
+    id: 'g3', locationName: 'Groenteboer Vennep',
+    geohash: 'u172smn', level: 1 as const, date: '10 mei 2026',
   },
 ];
 
