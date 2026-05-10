@@ -25,44 +25,44 @@ const CATEGORY_ICON: Record<string, string> = {
 // Mock locatiedata — wordt later vervangen door Nostr relay fetch
 export const MOCK_LOCATIONS: Location[] = [
   {
-    id: 'sxss4-alexander-nevsky',
-    name: 'Alexander Nevsky Cathedral',
-    description: 'Meest indrukwekkende kerk van Sofia. Ga vroeg — voor de toeristen.',
-    lat: 42.6957, lon: 23.3323, geohash: 'sxss4',
-    category: 'culture', checkinCount: 12, maxVerificationLevel: 3,
-    isAiGenerated: false, tags: ['church', 'history', 'sofia'],
+    id: 'u173z-begijnhof',
+    name: 'Begijnhof',
+    description: 'Stille middeleeuwse binnenhof verscholen achter een onopvallende deur aan het Spui. Oudste houten huis van Amsterdam staat hier.',
+    lat: 52.3697, lon: 4.8898, geohash: 'u173z',
+    category: 'hidden', checkinCount: 9, maxVerificationLevel: 3,
+    isAiGenerated: false, tags: ['hidden', 'history', 'amsterdam'],
   },
   {
-    id: 'sxss0-zhenski-pazar',
-    name: 'Zhenski Pazar',
-    description: 'Vraag naar de lokale kaas. Niet op het bord, maar ze hebben het altijd. Betaal cash.',
-    lat: 42.6978, lon: 23.3156, geohash: 'sxss0',
-    category: 'market', checkinCount: 4, maxVerificationLevel: 2,
-    isAiGenerated: true, tags: ['market', 'food', 'local'],
+    id: 'u173y-albert-cuypmarkt',
+    name: 'Albert Cuypmarkt',
+    description: 'Grootste daagse markt van Nederland. Stroopwafels vers van de plaat, verse vis, en tweedehands vinyl voor een euro.',
+    lat: 52.3556, lon: 4.8951, geohash: 'u173y',
+    category: 'market', checkinCount: 14, maxVerificationLevel: 2,
+    isAiGenerated: false, tags: ['market', 'food', 'local'],
   },
   {
-    id: 'sxss5-vitosha-blvd',
-    name: 'Vitosha Boulevard — zuidkant',
-    description: 'Verborgen passage achter het Sheraton. Lokale kunstenaars exposeren hier op zaterdag.',
-    lat: 42.6912, lon: 23.3219, geohash: 'sxss5',
-    category: 'hidden', checkinCount: 2, maxVerificationLevel: 4,
-    isAiGenerated: false, tags: ['art', 'hidden', 'weekend'],
+    id: 'u17pw-ndsm-werf',
+    name: 'NDSM-werf',
+    description: 'Voormalige scheepswerf in Noord, nu vrijplaats voor kunstenaars. Neem de gratis pont achter Centraal — vijf minuten varen.',
+    lat: 52.4014, lon: 4.8952, geohash: 'u17pw',
+    category: 'culture', checkinCount: 5, maxVerificationLevel: 4,
+    isAiGenerated: false, tags: ['art', 'industrial', 'noord'],
   },
   {
-    id: 'sxss6-borisova-gradina',
-    name: 'Borisova Gradina',
-    description: 'Grootste park van Sofia. Zondag ochtend: lokale lopers en yogagroepen.',
-    lat: 42.6887, lon: 23.3394, geohash: 'sxss6',
-    category: 'nature', checkinCount: 8, maxVerificationLevel: 2,
-    isAiGenerated: true, tags: ['park', 'nature', 'morning'],
+    id: 'u173m-vondelpark',
+    name: 'Vondelpark — openluchttheater',
+    description: 'Gratis concerten en voorstellingen van juni t/m augustus. Locals pikken een plekje op het gras met een fles wijn.',
+    lat: 52.3582, lon: 4.8674, geohash: 'u173m',
+    category: 'nature', checkinCount: 11, maxVerificationLevel: 2,
+    isAiGenerated: true, tags: ['park', 'culture', 'free'],
   },
   {
-    id: 'sxss3-one-more-bar',
-    name: 'One More Bar',
-    description: 'Geen bord buiten. Bel aan. Beste cocktails van Sofia voor een fractie van de prijs.',
-    lat: 42.6943, lon: 23.3267, geohash: 'sxss3',
-    category: 'nightlife', checkinCount: 6, maxVerificationLevel: 3,
-    isAiGenerated: false, tags: ['bar', 'hidden', 'cocktails'],
+    id: 'u173z-cafe-t-smalle',
+    name: "Café 't Smalle",
+    description: 'Proefhuisje uit 1786 aan de Egelantiersgracht. Terras hangt over het water. Geen muziek, geen wifi — gewoon het langzaamste terras van Amsterdam.',
+    lat: 52.3748, lon: 4.8842, geohash: 'u173z',
+    category: 'nightlife', checkinCount: 7, maxVerificationLevel: 3,
+    isAiGenerated: false, tags: ['brown cafe', 'canal', 'historic'],
   },
 ];
 
@@ -86,8 +86,8 @@ export default function S05Map() {
   const [userPos, setUserPos] = useState<{ lat: number; lon: number } | null>(null);
   const [posError, setPosError] = useState(false);
 
-  // Sofia centrum als fallback startpositie
-  const center = userPos ?? { lat: 42.6977, lon: 23.3219 };
+  // Amsterdam centrum als fallback startpositie
+  const center = userPos ?? { lat: 52.3760, lon: 4.9041 };
 
   useEffect(() => {
     navigator.geolocation.getCurrentPosition(
@@ -124,7 +124,7 @@ export default function S05Map() {
         <span className="text-2xl">🪿</span>
         <div className="flex items-center gap-3">
           <button className="flex items-center gap-1 text-sm text-white/70 hover:text-white">
-            Sofia <span className="text-white/30">▾</span>
+            Amsterdam <span className="text-white/30">▾</span>
           </button>
           <button
             onClick={() => navigate('/trip/new')}
@@ -185,7 +185,7 @@ export default function S05Map() {
 
         {posError && (
           <div className="absolute bottom-2 left-2 right-2 rounded-lg bg-black/70 px-3 py-2 text-xs text-white/60">
-            GPS niet beschikbaar — kaart gecentreerd op Sofia
+            GPS niet beschikbaar — kaart gecentreerd op Amsterdam
           </div>
         )}
       </div>

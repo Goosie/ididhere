@@ -9,16 +9,16 @@ const RARITY = ['', 'Gewoon', 'Zeldzaam', 'Epic', 'Legendary'];
 // Mock ganzencollectie — wordt vervangen door Nostr relay fetch (kind-37516)
 const MOCK_GEESE = [
   {
-    id: 'g1', locationName: 'Alexander Nevsky Cathedral',
-    geohash: 'sxss4qs', level: 3 as const, date: '15 apr 2026',
+    id: 'g1', locationName: 'Begijnhof',
+    geohash: 'u173zbx', level: 3 as const, date: '8 mei 2026',
   },
   {
-    id: 'g2', locationName: 'One More Bar',
-    geohash: 'sxss3kp', level: 2 as const, date: '14 apr 2026',
+    id: 'g2', locationName: "Café 't Smalle",
+    geohash: 'u173zqp', level: 2 as const, date: '7 mei 2026',
   },
   {
-    id: 'g3', locationName: 'Borisova Gradina',
-    geohash: 'sxss6mn', level: 1 as const, date: '28 mrt 2026',
+    id: 'g3', locationName: 'Albert Cuypmarkt',
+    geohash: 'u173ymn', level: 1 as const, date: '2 mei 2026',
   },
 ];
 

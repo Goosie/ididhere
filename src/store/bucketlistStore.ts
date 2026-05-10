@@ -20,28 +20,28 @@ interface BucketlistState {
 
 const MOCK_ITEMS: BucketItem[] = [
   {
-    id: 'mock-1', locationId: 'sxss4-alexander-nevsky',
-    locationName: 'Alexander Nevsky Cathedral',
-    category: 'culture', status: 'todo', privacy: 'public', trip: 'Sofia 2026',
+    id: 'mock-1', locationId: 'u173z-begijnhof',
+    locationName: 'Begijnhof',
+    category: 'hidden', status: 'todo', privacy: 'public', trip: 'Amsterdam 2026',
   },
   {
-    id: 'mock-2', locationId: 'sxss3-one-more-bar',
-    locationName: 'One More Bar',
-    category: 'nightlife', status: 'todo', privacy: 'private', trip: 'Sofia 2026',
+    id: 'mock-2', locationId: 'u173z-cafe-t-smalle',
+    locationName: "Café 't Smalle",
+    category: 'nightlife', status: 'todo', privacy: 'private', trip: 'Amsterdam 2026',
   },
   {
-    id: 'mock-3', locationId: 'sxss5-vitosha-blvd',
-    locationName: 'Vitosha Boulevard — zuidkant',
-    category: 'hidden', status: 'todo', privacy: 'public', trip: null,
+    id: 'mock-3', locationId: 'u17pw-ndsm-werf',
+    locationName: 'NDSM-werf',
+    category: 'culture', status: 'todo', privacy: 'public', trip: null,
   },
   {
-    id: 'mock-4', locationId: 'sxss6-borisova-gradina',
-    locationName: 'Borisova Gradina',
-    category: 'nature', status: 'done', privacy: 'public', trip: 'Sofia 2026',
+    id: 'mock-4', locationId: 'u173m-vondelpark',
+    locationName: 'Vondelpark — openluchttheater',
+    category: 'nature', status: 'done', privacy: 'public', trip: 'Amsterdam 2026',
   },
   {
-    id: 'mock-5', locationId: 'sxss0-zhenski-pazar',
-    locationName: 'Zhenski Pazar',
+    id: 'mock-5', locationId: 'u173y-albert-cuypmarkt',
+    locationName: 'Albert Cuypmarkt',
     category: 'market', status: 'done', privacy: 'friends', trip: null,
   },
 ];
