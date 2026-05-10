@@ -1,0 +1,17 @@
+[Unit]
+Description=GansjeTippy backend (IDidHere)
+After=network.target
+
+[Service]
+Type=simple
+User=www-data
+WorkingDirectory=/opt/ididhere/backend
+ExecStart=/usr/local/bin/bun run src/index.ts
+Restart=on-failure
+RestartSec=5
+
+# Omgevingsvariabelen — sla de echte waarden op in /opt/ididhere/backend/.env
+EnvironmentFile=/opt/ididhere/backend/.env
+
+[Install]
+WantedBy=multi-user.target
