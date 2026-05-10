@@ -4,6 +4,7 @@ import { buildTripEvent, buildBucketlistItemEvent } from '../lib/nostr/trip';
 import { signAndPublish } from '../lib/nostr/publish';
 import { encode } from '../lib/geohash';
 import { useSessionStore } from '../store/sessionStore';
+import { useBucketlistStore } from '../store/bucketlistStore';
 
 type Step = 'form' | 'loading' | 'results';
 
@@ -45,6 +46,7 @@ export default function S09CreateTrip() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const { privateKey } = useSessionStore();
+  const addItems = useBucketlistStore((s) => s.addItems);
 
   async function activateTippy() {
     if (!destination.trim()) return;
@@ -101,25 +103,36 @@ export default function S09CreateTrip() {
       endDate: endDate || undefined,
     });
 
-    if (privateKey) {
-      try {
-        await signAndPublish(tripEvent, privateKey);
+    const selectedTips = tips.filter((_, i) => selected.has(i));
 
-        const selectedTips = tips.filter((_, i) => selected.has(i));
-        await Promise.allSettled(
-          selectedTips.map((tip) => {
-            const geohash = encode(tip.lat, tip.lon, 7);
-            const locationId = `${geohash}-${tip.name.toLowerCase().replace(/\s+/g, '-')}`;
-            const bucketEvent = buildBucketlistItemEvent({ locationId, tripId });
-            return signAndPublish(bucketEvent, privateKey!);
-          }),
-        );
-      } catch {
-        // Niet-blokkerend — reis is lokaal aangemaakt
-      }
+    // Sla geselecteerde tips lokaal op in de bucketlist store
+    addItems(
+      selectedTips.map((tip) => {
+        const geohash = encode(tip.lat, tip.lon, 7);
+        const locationId = `${geohash}-${tip.name.toLowerCase().replace(/\s+/g, '-')}`;
+        return {
+          id: `trip-${tripId}-${locationId}`,
+          locationId,
+          locationName: tip.name,
+          category: tip.category,
+          status: 'todo' as const,
+          privacy: 'public' as const,
+          trip: destination,
+        };
+      }),
+    );
+
+    if (privateKey) {
+      signAndPublish(tripEvent, privateKey).catch(() => undefined);
+      selectedTips.forEach((tip) => {
+        const geohash = encode(tip.lat, tip.lon, 7);
+        const locationId = `${geohash}-${tip.name.toLowerCase().replace(/\s+/g, '-')}`;
+        const bucketEvent = buildBucketlistItemEvent({ locationId, tripId });
+        signAndPublish(bucketEvent, privateKey).catch(() => undefined);
+      });
     }
 
-    navigate('/home');
+    navigate('/bucket');
   }
 
   const categories = useMemo(() => {

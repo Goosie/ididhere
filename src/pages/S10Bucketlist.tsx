@@ -1,19 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useBucketlistStore } from '../store/bucketlistStore';
 import BottomNav from '../components/BottomNav';
 
-type Status = 'todo' | 'done';
 type BucketTab = 'todo' | 'done';
-
-interface BucketItem {
-  id: string;
-  locationId: string;
-  locationName: string;
-  category: string;
-  status: Status;
-  privacy: 'public' | 'friends' | 'private';
-  trip: string | null;
-}
 
 const CATEGORY_ICON: Record<string, string> = {
   food: '🍽️', nature: '🌿', culture: '🏛️',
@@ -24,49 +14,10 @@ const PRIVACY_ICON: Record<string, string> = {
   public: '🌍', friends: '👥', private: '🔒',
 };
 
-// Mock bucketlist items — worden vervangen door Nostr relay fetch (kind-37517)
-const INITIAL_ITEMS: BucketItem[] = [
-  {
-    id: '1', locationId: 'sxss4-alexander-nevsky',
-    locationName: 'Alexander Nevsky Cathedral',
-    category: 'culture', status: 'todo', privacy: 'public', trip: 'Sofia 2026',
-  },
-  {
-    id: '2', locationId: 'sxss3-one-more-bar',
-    locationName: 'One More Bar',
-    category: 'nightlife', status: 'todo', privacy: 'private', trip: 'Sofia 2026',
-  },
-  {
-    id: '3', locationId: 'sxss5-vitosha-blvd',
-    locationName: 'Vitosha Boulevard — zuidkant',
-    category: 'hidden', status: 'todo', privacy: 'public', trip: null,
-  },
-  {
-    id: '4', locationId: 'sxss6-borisova-gradina',
-    locationName: 'Borisova Gradina',
-    category: 'nature', status: 'done', privacy: 'public', trip: 'Sofia 2026',
-  },
-  {
-    id: '5', locationId: 'sxss0-zhenski-pazar',
-    locationName: 'Zhenski Pazar',
-    category: 'market', status: 'done', privacy: 'friends', trip: null,
-  },
-];
-
 export default function S10Bucketlist() {
   const navigate = useNavigate();
-  const [items, setItems] = useState<BucketItem[]>(INITIAL_ITEMS);
+  const { items, markDone, remove } = useBucketlistStore();
   const [tab, setTab] = useState<BucketTab>('todo');
-
-  function markDone(id: string) {
-    setItems((prev) =>
-      prev.map((item) => item.id === id ? { ...item, status: 'done' } : item)
-    );
-  }
-
-  function remove(id: string) {
-    setItems((prev) => prev.filter((item) => item.id !== id));
-  }
 
   const visible = items.filter((item) => item.status === tab);
   const todoCount = items.filter((i) => i.status === 'todo').length;
