@@ -178,7 +178,7 @@ export default function S09CreateTrip() {
             value={destination}
             onChange={(e) => setDestination(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && activateTippy()}
-            placeholder="Bijv. Sofia, Bulgarije"
+            placeholder="Bijv. Amsterdam, Nederland"
             autoFocus
             className="mb-5 w-full rounded-xl border border-border bg-surface px-4 py-3 text-white placeholder-white/20 outline-none focus:border-brand"
           />
