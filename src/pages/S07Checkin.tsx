@@ -5,7 +5,7 @@ import { calculateTrustScore } from '../lib/verification/trustScore';
 import { buildCheckinEvent } from '../lib/nostr/events';
 import { signAndPublish } from '../lib/nostr/publish';
 import { encode } from '../lib/geohash';
-import { MOCK_LOCATIONS } from './S05Map';
+import { useLocationStore } from '../store/locationStore';
 import { useSessionStore } from '../store/sessionStore';
 import type { Privacy } from '../lib/nostr/events';
 
@@ -41,7 +41,8 @@ export default function S07Checkin() {
   const [submitting, setSubmitting] = useState(false);
   const [publishError, setPublishError] = useState<string | null>(null);
 
-  const loc = MOCK_LOCATIONS.find((l) => l.id === id);
+  const locations = useLocationStore((s) => s.locations);
+  const loc = locations.find((l) => l.id === id);
 
   const trustResult = loc && gps.position
     ? calculateTrustScore({

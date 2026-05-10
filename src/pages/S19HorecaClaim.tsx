@@ -5,7 +5,7 @@ import { calculateTrustScore } from '../lib/verification/trustScore';
 import { deriveDormantKeyPair, getDormantAccountInfo, shortPubkey } from '../lib/nostr/dormantAccount';
 import { signAndPublishAs } from '../lib/nostr/publish';
 import { IDIDHERE_KINDS } from '../lib/nostr/kinds';
-import { MOCK_LOCATIONS } from './S05Map';
+import { useLocationStore } from '../store/locationStore';
 
 type ClaimStep = 'intro' | 'gps' | 'confirm' | 'success';
 
@@ -23,7 +23,8 @@ export default function S19HorecaClaim() {
   const [claiming, setClaiming] = useState(false);
   const [claimedPubkey, setClaimedPubkey] = useState<string | null>(null);
 
-  const loc = MOCK_LOCATIONS.find((l) => l.id === id);
+  const locations = useLocationStore((s) => s.locations);
+  const loc = locations.find((l) => l.id === id);
 
   if (!loc) {
     return (

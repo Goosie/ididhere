@@ -5,6 +5,7 @@ import { signAndPublish } from '../lib/nostr/publish';
 import { encode } from '../lib/geohash';
 import { useSessionStore } from '../store/sessionStore';
 import { useBucketlistStore } from '../store/bucketlistStore';
+import { useLocationStore } from '../store/locationStore';
 
 type Step = 'form' | 'loading' | 'results';
 
@@ -47,6 +48,7 @@ export default function S09CreateTrip() {
   const [saving, setSaving] = useState(false);
   const { privateKey } = useSessionStore();
   const addItems = useBucketlistStore((s) => s.addItems);
+  const addLocations = useLocationStore((s) => s.addLocations);
 
   async function activateTippy() {
     if (!destination.trim()) return;
@@ -105,28 +107,45 @@ export default function S09CreateTrip() {
 
     const selectedTips = tips.filter((_, i) => selected.has(i));
 
+    const selectedWithIds = selectedTips.map((tip) => {
+      const geohash = encode(tip.lat, tip.lon, 7);
+      const locationId = `${geohash}-${tip.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+      return { tip, geohash, locationId };
+    });
+
+    // Sla locatiedata op zodat S06 ze kan tonen
+    addLocations(
+      selectedWithIds.map(({ tip, geohash, locationId }) => ({
+        id: locationId,
+        name: tip.name,
+        description: tip.description,
+        lat: tip.lat,
+        lon: tip.lon,
+        geohash,
+        category: tip.category,
+        checkinCount: 0,
+        maxVerificationLevel: 1 as const,
+        isAiGenerated: true,
+        tags: tip.tags,
+      })),
+    );
+
     // Sla geselecteerde tips lokaal op in de bucketlist store
     addItems(
-      selectedTips.map((tip) => {
-        const geohash = encode(tip.lat, tip.lon, 7);
-        const locationId = `${geohash}-${tip.name.toLowerCase().replace(/\s+/g, '-')}`;
-        return {
-          id: `trip-${tripId}-${locationId}`,
-          locationId,
-          locationName: tip.name,
-          category: tip.category,
-          status: 'todo' as const,
-          privacy: 'public' as const,
-          trip: destination,
-        };
-      }),
+      selectedWithIds.map(({ tip, locationId }) => ({
+        id: `trip-${tripId}-${locationId}`,
+        locationId,
+        locationName: tip.name,
+        category: tip.category,
+        status: 'todo' as const,
+        privacy: 'public' as const,
+        trip: destination,
+      })),
     );
 
     if (privateKey) {
       signAndPublish(tripEvent, privateKey).catch(() => undefined);
-      selectedTips.forEach((tip) => {
-        const geohash = encode(tip.lat, tip.lon, 7);
-        const locationId = `${geohash}-${tip.name.toLowerCase().replace(/\s+/g, '-')}`;
+      selectedWithIds.forEach(({ locationId }) => {
         const bucketEvent = buildBucketlistItemEvent({ locationId, tripId });
         signAndPublish(bucketEvent, privateKey).catch(() => undefined);
       });

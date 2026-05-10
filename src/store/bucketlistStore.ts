@@ -74,6 +74,6 @@ export const useBucketlistStore = create<BucketlistState>()(
       remove: (id) =>
         set((state) => ({ items: state.items.filter((item) => item.id !== id) })),
     }),
-    { name: 'ididhere-bucketlist' },
+    { name: 'ididhere-bucketlist-v2' },
   ),
 );

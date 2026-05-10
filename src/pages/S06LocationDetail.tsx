@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { MOCK_LOCATIONS } from './S05Map';
+import { useLocationStore } from '../store/locationStore';
 
 const CATEGORY_ICON: Record<string, string> = {
   food: '🍽️', nature: '🌿', culture: '🏛️',
@@ -11,7 +11,8 @@ const STARS = ['', '⭐', '⭐⭐', '⭐⭐⭐', '⭐⭐⭐⭐'];
 export default function S06LocationDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const loc = MOCK_LOCATIONS.find((l) => l.id === id);
+  const locations = useLocationStore((s) => s.locations);
+  const loc = locations.find((l) => l.id === id);
 
   if (!loc) {
     return (
