@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDidHere — Screenflow</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0a0f;
+    --surface: #13131a;
+    --surface2: #1c1c26;
+    --border: #2a2a38;
+    --accent: #f5a623;
+    --accent2: #7b61ff;
+    --accent3: #00d4aa;
+    --text: #e8e8f0;
+    --text-muted: #6b6b80;
+    --goose: #f5a623;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    padding: 24px 40px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: 'Space Mono', monospace;
+    font-size: 18px;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo span { color: var(--text-muted); font-size: 13px; }
+
+  nav {
+    display: flex;
+    gap: 8px;
+  }
+
+  nav button {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  nav button.active, nav button:hover {
+    background: var(--accent);
+    color: var(--bg);
+    border-color: var(--accent);
+    color: #000;
+    font-weight: 600;
+  }
+
+  /* VIEWS */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* FLOW VIEW */
+  .flow-container {
+    padding: 40px;
+    overflow-x: auto;
+  }
+
+  .flow-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 32px;
+  }
+
+  .flow-section {
+    margin-bottom: 48px;
+  }
+
+  .flow-section-title {
+    font-size: 11px;
+    color: var(--accent);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flow-section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .screen-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 18px;
+    min-width: 160px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .screen-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(245, 166, 35, 0.15);
+  }
+
+  .screen-card.highlight {
+    border-color: var(--accent2);
+    background: rgba(123, 97, 255, 0.08);
+  }
+
+  .screen-card.highlight:hover {
+    border-color: var(--accent2);
+    box-shadow: 0 8px 24px rgba(123, 97, 255, 0.2);
+  }
+
+  .screen-card.cta {
+    border-color: var(--accent3);
+    background: rgba(0, 212, 170, 0.06);
+  }
+
+  .screen-card-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+  }
+
+  .screen-card-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+
+  .screen-card-desc {
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.4;
+  }
+
+  .screen-card-tag {
+    position: absolute;
+    top: -8px;
+    right: 10px;
+    background: var(--accent);
+    color: #000;
+    font-size: 9px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .arrow {
+    color: var(--text-muted);
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+
+  .arrow.down {
+    display: block;
+    text-align: left;
+    margin: 8px 0 8px 20px;
+    font-size: 16px;
+  }
+
+  /* WIREFRAME VIEW */
+  .wireframes-grid {
+    padding: 40px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 32px;
+  }
+
+  .wireframe-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .wireframe-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .wireframe-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+  }
+
+  .wireframe-name {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .wireframe-persona {
+    font-size: 10px;
+    color: var(--text-muted);
+    background: var(--surface2);
+    padding: 3px 8px;
+    border-radius: 4px;
+  }
+
+  .wireframe-body {
+    padding: 16px;
+  }
+
+  /* Browser chrome */
+  .browser {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+    font-size: 11px;
+  }
+
+  .browser-bar {
+    background: var(--bg);
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .browser-dots {
+    display: flex;
+    gap: 4px;
+  }
+
+  .browser-dots span {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    display: block;
+  }
+
+  .browser-url {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--text-muted);
+    flex: 1;
+  }
+
+  .browser-content {
+    padding: 16px;
+    min-height: 280px;
+  }
+
+  /* Wireframe elements */
+  .wf-navbar {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  .wf-logo { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--accent); }
+  .wf-nav-items { display: flex; gap: 6px; }
+  .wf-nav-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .wf-hero {
+    background: linear-gradient(135deg, rgba(245,166,35,0.1), rgba(123,97,255,0.1));
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 12px;
+  }
+
+  .wf-hero-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .wf-hero-sub { font-size: 10px; color: var(--text-muted); margin-bottom: 12px; }
+
+  .wf-btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #000;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 6px 14px;
+    border-radius: 5px;
+    font-family: 'Space Mono', monospace;
+  }
+
+  .wf-btn.secondary {
+    background: var(--surface2);
+    color: var(--text);
+    border: 1px solid var(--border);
+    margin-left: 6px;
+  }
+
+  .wf-btn.purple {
+    background: var(--accent2);
+    color: #fff;
+  }
+
+  .wf-btn.green {
+    background: var(--accent3);
+    color: #000;
+  }
+
+  .wf-map {
+    background: var(--surface2);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .wf-map-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 20px 20px;
+    opacity: 0.3;
+  }
+
+  .wf-map-pin {
+    position: absolute;
+    font-size: 16px;
+  }
+
+  .wf-map-label {
+    position: relative;
+    z-index: 1;
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: 'Space Mono', monospace;
+  }
+
+  .wf-list { margin-bottom: 12px; }
+
+  .wf-list-item {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .wf-list-icon { font-size: 14px; flex-shrink: 0; }
+  .wf-list-content { flex: 1; }
+  .wf-list-title { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+  .wf-list-sub { font-size: 10px; color: var(--text-muted); }
+  .wf-list-action { font-size: 10px; color: var(--accent); font-family: 'Space Mono', monospace; }
+
+  .wf-input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    width: 100%;
+    margin-bottom: 8px;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .wf-input.focus { border-color: var(--accent); color: var(--text); }
+
+  .wf-section-label {
+    font-size: 10px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 8px;
+    margin-top: 12px;
+  }
+
+  .wf-checkin-btn {
+    background: linear-gradient(135deg, var(--accent), #e8900a);
+    color: #000;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 10px;
+    border-radius: 8px;
+    text-align: center;
+    font-family: 'Space Mono', monospace;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .wf-goose {
+    background: linear-gradient(135deg, rgba(245,166,35,0.15), rgba(245,166,35,0.05));
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 8px;
+  }
+
+  .wf-goose-emoji { font-size: 28px; margin-bottom: 4px; }
+  .wf-goose-title { font-size: 11px; font-weight: 700; color: var(--accent); }
+  .wf-goose-sub { font-size: 10px; color: var(--text-muted); }
+
+  .wf-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+
+  .wf-stat {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px;
+    text-align: center;
+  }
+
+  .wf-stat-num { font-size: 16px; font-weight: 700; color: var(--accent); font-family: 'Space Mono', monospace; }
+  .wf-stat-label { font-size: 9px; color: var(--text-muted); }
+
+  .wf-privacy {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+
+  .wf-privacy-btn {
+    flex: 1;
+    padding: 6px;
+    border-radius: 5px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    text-align: center;
+    font-size: 10px;
+    color: var(--text-muted);
+  }
+
+  .wf-privacy-btn.active {
+    border-color: var(--accent);
+    background: rgba(245,166,35,0.1);
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .wf-seed {
+    background: var(--bg);
+    border: 2px dashed var(--accent);
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+
+  .wf-seed-words {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    margin-bottom: 8px;
+  }
+
+  .wf-seed-word {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 3px 6px;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+
+  .wf-alert {
+    background: rgba(245,166,35,0.1);
+    border: 1px solid rgba(245,166,35,0.3);
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 10px;
+    color: var(--accent);
+    margin-bottom: 8px;
+    display: flex;
+    gap: 6px;
+    align-items: flex-start;
+  }
+
+  .wf-tabs {
+    display: flex;
+    gap: 2px;
+    margin-bottom: 12px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 3px;
+  }
+
+  .wf-tab {
+    flex: 1;
+    padding: 5px;
+    border-radius: 4px;
+    font-size: 10px;
+    text-align: center;
+    color: var(--text-muted);
+  }
+
+  .wf-tab.active {
+    background: var(--surface2);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  .wf-challenge {
+    background: rgba(123,97,255,0.1);
+    border: 1px solid rgba(123,97,255,0.3);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .wf-challenge-title { font-size: 11px; font-weight: 600; color: var(--accent2); margin-bottom: 4px; }
+  .wf-challenge-sub { font-size: 10px; color: var(--text-muted); }
+
+  .wf-horeca {
+    background: rgba(0,212,170,0.08);
+    border: 1px solid rgba(0,212,170,0.2);
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 8px;
+  }
+
+  .wf-horeca-title { font-size: 11px; font-weight: 600; color: var(--accent3); margin-bottom: 4px; }
+  .wf-horeca-sub { font-size: 10px; color: var(--text-muted); }
+
+  .wf-bottom-bar {
+    display: flex;
+    justify-content: space-around;
+    padding: 8px 0 4px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+
+  .wf-bottom-item {
+    text-align: center;
+    font-size: 9px;
+    color: var(--text-muted);
+  }
+
+  .wf-bottom-item.active { color: var(--accent); }
+  .wf-bottom-icon { font-size: 16px; display: block; margin-bottom: 2px; }
+
+  .screen-notes {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+    font-size: 11px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+
+  .screen-notes strong { color: var(--text); }
+
+  /* Legend */
+  .legend {
+    display: flex;
+    gap: 16px;
+    padding: 0 40px 32px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+  }
+
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    border: 1px solid;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    🪿 IDidHere <span>/ Screenflow v1</span>
+  </div>
+  <nav>
+    <button class="active" onclick="showView('flow')">Screenflow</button>
+    <button onclick="showView('wireframes')">Wireframes</button>
+  </nav>
+</header>
+
+<!-- FLOW VIEW -->
+<div id="flow" class="view active">
+  <div class="flow-container">
+    <div class="flow-title">// Alle screens — web app versie 1</div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="border-color: var(--border); background: var(--surface)"></div> Standaard screen</div>
+      <div class="legend-item"><div class="legend-dot" style="border-color: var(--accent2); background: rgba(123,97,255,0.08)"></div> Kritiek pad</div>
+      <div class="legend-item"><div class="legend-dot" style="border-color: var(--accent3); background: rgba(0,212,170,0.06)"></div> Actie / CTA</div>
+    </div>
+
+    <!-- ONBOARDING -->
+    <div class="flow-section">
+      <div class="flow-section-title">01 — Onboarding</div>
+      <div class="flow-row">
+        <div class="screen-card highlight" onclick="showView('wireframes'); scrollTo('s01')">
+          <div class="screen-card-num">S-01</div>
+          <div class="screen-card-name">Landing</div>
+          <div class="screen-card-desc">Intro + invite URL ontvangst</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card highlight" onclick="showView('wireframes'); scrollTo('s02')">
+          <div class="screen-card-tag">KRITIEK</div>
+          <div class="screen-card-num">S-02</div>
+          <div class="screen-card-name">Seed Phrase</div>
+          <div class="screen-card-desc">12 woorden genereren + backup bevestigen</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s03')">
+          <div class="screen-card-num">S-03</div>
+          <div class="screen-card-name">Wallet Koppelen</div>
+          <div class="screen-card-desc">Alby OAuth of overslaan</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card cta" onclick="showView('wireframes'); scrollTo('s04')">
+          <div class="screen-card-num">S-04</div>
+          <div class="screen-card-name">Welkom 🪿</div>
+          <div class="screen-card-desc">Eerste gans + app uitleg</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ONTDEKKEN -->
+    <div class="flow-section">
+      <div class="flow-section-title">02 — Ontdekken</div>
+      <div class="flow-row">
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s05')">
+          <div class="screen-card-num">S-05</div>
+          <div class="screen-card-name">Home / Kaart</div>
+          <div class="screen-card-desc">Kaart + inspiratielijst in de buurt</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s06')">
+          <div class="screen-card-num">S-06</div>
+          <div class="screen-card-name">Locatie Detail</div>
+          <div class="screen-card-desc">Tip info + bucketlist + IWantThisTo</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card cta" onclick="showView('wireframes'); scrollTo('s07')">
+          <div class="screen-card-tag">KERN</div>
+          <div class="screen-card-num">S-07</div>
+          <div class="screen-card-name">Check-in</div>
+          <div class="screen-card-desc">GPS verify → Gans ontvangen</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s08')">
+          <div class="screen-card-num">S-08</div>
+          <div class="screen-card-name">Gans Ontvangen</div>
+          <div class="screen-card-desc">Animatie + bewijs op Nostr</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REIS PLANNEN -->
+    <div class="flow-section">
+      <div class="flow-section-title">03 — Reis Plannen</div>
+      <div class="flow-row">
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s09')">
+          <div class="screen-card-num">S-09</div>
+          <div class="screen-card-name">Reis Aanmaken</div>
+          <div class="screen-card-desc">Bestemming + periode + GansjeTippy activeren</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s10')">
+          <div class="screen-card-num">S-10</div>
+          <div class="screen-card-name">Bucketlist</div>
+          <div class="screen-card-desc">Items beheren + privacy instellen</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s11')">
+          <div class="screen-card-num">S-11</div>
+          <div class="screen-card-name">IWantThisTo</div>
+          <div class="screen-card-desc">Periode + known/unknown kiezen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SOCIAAL -->
+    <div class="flow-section">
+      <div class="flow-section-title">04 — Sociaal</div>
+      <div class="flow-row">
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s12')">
+          <div class="screen-card-num">S-12</div>
+          <div class="screen-card-name">Feed</div>
+          <div class="screen-card-desc">Activiteiten van netwerk</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s13')">
+          <div class="screen-card-num">S-13</div>
+          <div class="screen-card-name">Uitdaging Plaatsen</div>
+          <div class="screen-card-desc">Bro/Folly zet sats op Travy's item</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s14')">
+          <div class="screen-card-num">S-14</div>
+          <div class="screen-card-name">Profiel</div>
+          <div class="screen-card-desc">Gansen + check-ins + reputatie</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s15')">
+          <div class="screen-card-num">S-15</div>
+          <div class="screen-card-name">Uitnodigen</div>
+          <div class="screen-card-desc">Persoonlijke referral URL delen</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TIPPY & STAMPER -->
+    <div class="flow-section">
+      <div class="flow-section-title">05 — Bijdragen (Tippy & Stamper)</div>
+      <div class="flow-row">
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s16')">
+          <div class="screen-card-num">S-16</div>
+          <div class="screen-card-name">Tip Plaatsen</div>
+          <div class="screen-card-desc">GPS auto + beschrijving + foto</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s17')">
+          <div class="screen-card-num">S-17</div>
+          <div class="screen-card-name">Locatie Aanmaken</div>
+          <div class="screen-card-desc">Nieuw café + Founding Gans + deelbaar kaartje</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s18')">
+          <div class="screen-card-num">S-18</div>
+          <div class="screen-card-name">Stamper Dashboard</div>
+          <div class="screen-card-desc">QR punten beheren + verdienste</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HORECA -->
+    <div class="flow-section">
+      <div class="flow-section-title">06 — Horeca</div>
+      <div class="flow-row">
+        <div class="screen-card cta" onclick="showView('wireframes'); scrollTo('s19')">
+          <div class="screen-card-num">S-19</div>
+          <div class="screen-card-name">Horeca Claim</div>
+          <div class="screen-card-desc">Slapend account claimen + sats zien</div>
+        </div>
+        <div class="arrow">→</div>
+        <div class="screen-card" onclick="showView('wireframes'); scrollTo('s20')">
+          <div class="screen-card-num">S-20</div>
+          <div class="screen-card-name">Horeca Dashboard</div>
+          <div class="screen-card-desc">Bucketlists omgeving + gesponsorde zaps</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- WIREFRAMES VIEW -->
+<div id="wireframes" class="view">
+  <div class="wireframes-grid">
+
+    <!-- S-01 LANDING -->
+    <div class="wireframe-card" id="s01">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-01</div>
+          <div class="wireframe-name">Landing</div>
+        </div>
+        <div class="wireframe-persona">Iedereen</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/join?ref=perry</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-navbar">
+              <div class="wf-logo">🪿 IDidHere</div>
+              <div class="wf-nav-items">
+                <div class="wf-nav-item">Login</div>
+              </div>
+            </div>
+            <div class="wf-hero">
+              <div class="wf-goose-emoji">🪿</div>
+              <div class="wf-hero-title">Ontdek. Doe. Bewijs.</div>
+              <div class="wf-hero-sub">Jouw ontdekkingen zijn van jou — op Nostr, voor altijd.</div>
+              <div class="wf-btn">Begin met ontdekken</div>
+              <div class="wf-btn secondary">Meer info</div>
+            </div>
+            <div class="wf-list">
+              <div class="wf-list-item">
+                <div class="wf-list-icon">📍</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Verrassende plekken in jouw omgeving</div>
+                  <div class="wf-list-sub">Geen massa-aanbevelingen</div>
+                </div>
+              </div>
+              <div class="wf-list-item">
+                <div class="wf-list-icon">🪿</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Bewijs dat jij er was</div>
+                  <div class="wf-list-sub">Unieke gans per locatie — van jou</div>
+                </div>
+              </div>
+              <div class="wf-list-item">
+                <div class="wf-list-icon">⚡</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Verdien sats voor goede tips</div>
+                  <div class="wf-list-sub">Direct, peer to peer</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Doel:</strong> Laagdrempelige instap. Invite URL vult automatisch context in — Perry heeft je uitgenodigd. Één CTA: begin.</div>
+    </div>
+
+    <!-- S-02 SEED PHRASE -->
+    <div class="wireframe-card" id="s02">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-02</div>
+          <div class="wireframe-name">Seed Phrase</div>
+        </div>
+        <div class="wireframe-persona">Nieuwe gebruiker</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/onboarding/keys</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-section-label">Stap 1 van 2 — Jouw sleutels</div>
+            <div class="wf-alert">⚠️ Schrijf deze 12 woorden op. Dit is alles wat je nodig hebt om alles te herstellen.</div>
+            <div class="wf-seed">
+              <div class="wf-seed-words">
+                <div class="wf-seed-word">1. river</div>
+                <div class="wf-seed-word">2. goose</div>
+                <div class="wf-seed-word">3. mirror</div>
+                <div class="wf-seed-word">4. alpine</div>
+                <div class="wf-seed-word">5. frost</div>
+                <div class="wf-seed-word">6. candle</div>
+                <div class="wf-seed-word">7. bridge</div>
+                <div class="wf-seed-word">8. orbit</div>
+                <div class="wf-seed-word">9. pebble</div>
+                <div class="wf-seed-word">10. hawk</div>
+                <div class="wf-seed-word">11. silver</div>
+                <div class="wf-seed-word">12. dawn</div>
+              </div>
+              <div style="font-size:10px; color: var(--text-muted); text-align:center;">Klik om te kopiëren</div>
+            </div>
+            <div class="wf-input focus">✓ Ik heb mijn 12 woorden opgeschreven</div>
+            <div class="wf-btn" style="width:100%; text-align:center; display:block;">Doorgaan →</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Kritiek scherm.</strong> Seed phrase gegenereerd via BIP39. Nostr sleutel via NIP-06. Gebruiker bevestigt expliciet. Geen skip mogelijk.</div>
+    </div>
+
+    <!-- S-03 WALLET -->
+    <div class="wireframe-card" id="s03">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-03</div>
+          <div class="wireframe-name">Wallet Koppelen</div>
+        </div>
+        <div class="wireframe-persona">Nieuwe gebruiker</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/onboarding/wallet</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-section-label">Stap 2 van 2 — Lightning wallet (optioneel)</div>
+            <div class="wf-list-item" style="margin-bottom:8px; border-color: var(--accent); cursor:pointer;">
+              <div class="wf-list-icon">⚡</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">Koppel Alby wallet</div>
+                <div class="wf-list-sub">Gratis · Binnen de app · Één klik</div>
+              </div>
+              <div class="wf-list-action">→</div>
+            </div>
+            <div class="wf-list-item" style="margin-bottom:8px;">
+              <div class="wf-list-icon">🔌</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">Eigen NWC wallet koppelen</div>
+                <div class="wf-list-sub">Phoenix, Breez, eigen node</div>
+              </div>
+              <div class="wf-list-action">→</div>
+            </div>
+            <div style="text-align:center; padding: 12px 0;">
+              <div style="font-size:10px; color: var(--text-muted); margin-bottom:8px;">Wil je later een wallet koppelen?</div>
+              <div class="wf-btn secondary">Overslaan — later doen</div>
+            </div>
+            <div class="wf-alert">💡 Je kunt de app volledig gebruiken zonder wallet. Een wallet is alleen nodig om sats te sturen of ontvangen.</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Geen drempel.</strong> Wallet is optioneel. Alby OAuth opent als popup — gebruiker verlaat de app nooit.</div>
+    </div>
+
+    <!-- S-04 WELKOM -->
+    <div class="wireframe-card" id="s04">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-04</div>
+          <div class="wireframe-name">Welkom 🪿</div>
+        </div>
+        <div class="wireframe-persona">Nieuwe gebruiker</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/welcome</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-goose" style="padding: 20px; margin-bottom: 12px;">
+              <div class="wf-goose-emoji" style="font-size: 40px;">🪿</div>
+              <div class="wf-goose-title" style="font-size: 14px;">Je eerste gans!</div>
+              <div class="wf-goose-sub">Welkomstgans — alleen voor nieuwe ontdekkers</div>
+              <div style="font-size:9px; color: var(--text-muted); margin-top: 6px; font-family: 'Space Mono', monospace;">Opgeslagen op Nostr · Van jou</div>
+            </div>
+            <div class="wf-stats">
+              <div class="wf-stat"><div class="wf-stat-num">1</div><div class="wf-stat-label">Gans</div></div>
+              <div class="wf-stat"><div class="wf-stat-num">0</div><div class="wf-stat-label">Check-ins</div></div>
+              <div class="wf-stat"><div class="wf-stat-num">0</div><div class="wf-stat-label">Sats</div></div>
+            </div>
+            <div class="wf-btn" style="width:100%; text-align:center; display:block;">Beginnen met ontdekken →</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Eerste beloning.</strong> Welkomstgans geeft direct gevoel van eigendom. Stats tonen startpositie. Één CTA naar Home.</div>
+    </div>
+
+    <!-- S-05 HOME KAART -->
+    <div class="wireframe-card" id="s05">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-05</div>
+          <div class="wireframe-name">Home / Kaart</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/map</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-navbar">
+              <div class="wf-logo">🪿</div>
+              <div class="wf-nav-items">
+                <div class="wf-nav-item">Sofia ▾</div>
+                <div class="wf-nav-item">Filter</div>
+              </div>
+            </div>
+            <div class="wf-map">
+              <div class="wf-map-grid"></div>
+              <div class="wf-map-pin" style="top:30%; left:40%">📍</div>
+              <div class="wf-map-pin" style="top:50%; left:60%">🪿</div>
+              <div class="wf-map-pin" style="top:65%; left:35%">⚡</div>
+              <div class="wf-map-label">Kaart — geohash gefilterd</div>
+            </div>
+            <div class="wf-tabs">
+              <div class="wf-tab active">In de buurt</div>
+              <div class="wf-tab">Trending</div>
+              <div class="wf-tab">🪿 GansjeTippy</div>
+            </div>
+            <div class="wf-list">
+              <div class="wf-list-item">
+                <div class="wf-list-icon">🏛️</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Alexander Nevsky Cathedral</div>
+                  <div class="wf-list-sub">⭐⭐⭐ · 230m · 12 check-ins</div>
+                </div>
+                <div class="wf-list-action">+</div>
+              </div>
+              <div class="wf-list-item" style="border-color: rgba(245,166,35,0.3);">
+                <div class="wf-list-icon">🪿</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Zhenski Pazar</div>
+                  <div class="wf-list-sub">AI tip · 450m · Nog niet geverifieerd</div>
+                </div>
+                <div class="wf-list-action">+</div>
+              </div>
+            </div>
+            <div class="wf-bottom-bar">
+              <div class="wf-bottom-item active"><span class="wf-bottom-icon">🗺️</span>Kaart</div>
+              <div class="wf-bottom-item"><span class="wf-bottom-icon">📋</span>Lijst</div>
+              <div class="wf-bottom-item"><span class="wf-bottom-icon">🎒</span>Bucket</div>
+              <div class="wf-bottom-item"><span class="wf-bottom-icon">👤</span>Profiel</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Hoofdscherm.</strong> Kaart + lijst. GansjeTippy tab toont AI suggesties duidelijk gescheiden van menselijke tips. + voegt toe aan bucketlist.</div>
+    </div>
+
+    <!-- S-06 LOCATIE DETAIL -->
+    <div class="wireframe-card" id="s06">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-06</div>
+          <div class="wireframe-name">Locatie Detail</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/place/sofia-pazar</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-map" style="height:100px; margin-bottom:10px;">
+              <div class="wf-map-grid"></div>
+              <div class="wf-map-pin" style="top:40%; left:45%">📍</div>
+            </div>
+            <div style="font-size:14px; font-weight:700; margin-bottom:4px;">Zhenski Pazar</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:10px;">Lokale markt · Sofia · door Folly · ⭐⭐</div>
+            <div style="font-size:11px; color:var(--text); margin-bottom:10px; line-height:1.5;">Vraag naar de lokale kaas. Niet op het bord, maar ze hebben het altijd. Betaal cash.</div>
+            <div class="wf-horeca">
+              <div class="wf-horeca-title">⚡ Ivo's Koffiehuis biedt aan</div>
+              <div class="wf-horeca-sub">Eerste koffie gratis na je bezoek aan de markt</div>
+            </div>
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <div class="wf-btn" style="flex:1; text-align:center;">+ Bucketlist</div>
+              <div class="wf-btn purple" style="flex:1; text-align:center; color:#fff;">IWantThisTo</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <div class="wf-btn secondary" style="flex:1; text-align:center;">⚡ Zap Folly</div>
+              <div class="wf-btn green" style="flex:1; text-align:center;">IDidHere ✓</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Vier acties:</strong> Bucketlist, IWantThisTo, Zap tip-gever, Check-in. Horeca aanbod zichtbaar maar niet opdringerig.</div>
+    </div>
+
+    <!-- S-07 CHECK-IN -->
+    <div class="wireframe-card" id="s07">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-07</div>
+          <div class="wireframe-name">Check-in</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/checkin/sofia-pazar</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-section-label">Privacy instelling</div>
+            <div class="wf-privacy">
+              <div class="wf-privacy-btn">🌍 Publiek</div>
+              <div class="wf-privacy-btn active">👥 Vrienden</div>
+              <div class="wf-privacy-btn">🔒 Privé</div>
+            </div>
+            <div class="wf-list-item" style="margin-bottom:8px;">
+              <div class="wf-list-icon">📍</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">GPS detecteren...</div>
+                <div class="wf-list-sub" style="color:var(--accent3);">✓ Binnen 50m van locatie</div>
+              </div>
+            </div>
+            <div class="wf-list-item" style="margin-bottom:12px;">
+              <div class="wf-list-icon">🌐</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">WiFi netwerk herkend</div>
+                <div class="wf-list-sub" style="color:var(--accent3);">✓ Lokale context bevestigd</div>
+              </div>
+            </div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:8px; font-family:'Space Mono',monospace;">VERIFICATIESCORE: ⭐⭐ — REDELIJK</div>
+            <div class="wf-checkin-btn">🪿 IDidHere!</div>
+            <div style="font-size:10px; color:var(--text-muted); text-align:center;">Wordt opgeslagen als Nostr event · NIP-44 versleuteld voor vrienden</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Kern actie.</strong> GPS automatisch. Privacy zichtbaar. Verificatiescore transparant. Één grote knop. Geen technische termen zichtbaar voor gebruiker.</div>
+    </div>
+
+    <!-- S-08 GANS ONTVANGEN -->
+    <div class="wireframe-card" id="s08">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-08</div>
+          <div class="wireframe-name">Gans Ontvangen</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/goose/sofia-pazar</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-goose" style="padding:24px;">
+              <div class="wf-goose-emoji" style="font-size:48px;">🪿</div>
+              <div class="wf-goose-title" style="font-size:16px;">Marktgans van Sofia</div>
+              <div class="wf-goose-sub">Uniek · Alleen van jou · #247 ooit uitgegeven</div>
+              <div style="font-size:9px; color:var(--text-muted); margin-top:8px; font-family:'Space Mono',monospace;">Opgeslagen als NIP-58 badge op Nostr</div>
+            </div>
+            <div class="wf-challenge" style="margin-bottom:8px;">
+              <div class="wf-challenge-title">🎉 Uitdaging voltooid!</div>
+              <div class="wf-challenge-sub">Bro had 500 sats ingezet · Vrijgegeven naar jouw wallet</div>
+            </div>
+            <div style="display:flex; gap:6px;">
+              <div class="wf-btn" style="flex:1; text-align:center;">Delen</div>
+              <div class="wf-btn secondary" style="flex:1; text-align:center;">Collectie bekijken</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Beloningsmoment.</strong> Animatie van gans verschijnen. Als uitdaging was gekoppeld: sats vrijgegeven zichtbaar. Delen knop voor organische groei.</div>
+    </div>
+
+    <!-- S-09 REIS AANMAKEN -->
+    <div class="wireframe-card" id="s09">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-09</div>
+          <div class="wireframe-name">Reis Aanmaken</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/trip/new</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-input focus">📍 Bestemming: Sofia, Bulgarije</div>
+            <div style="display:flex; gap:6px; margin-bottom:8px;">
+              <div class="wf-input" style="flex:1;">Van: 15 jun</div>
+              <div class="wf-input" style="flex:1;">Tot: 20 jun</div>
+            </div>
+            <div class="wf-privacy">
+              <div class="wf-privacy-btn active">🌍 Publiek</div>
+              <div class="wf-privacy-btn">👥 Vrienden</div>
+              <div class="wf-privacy-btn">🔒 Privé</div>
+            </div>
+            <div class="wf-list-item" style="margin-bottom:8px; border-color:rgba(245,166,35,0.3);">
+              <div class="wf-list-icon">🪿</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">GansjeTippy activeren</div>
+                <div class="wf-list-sub">Genereert persoonlijke suggesties voor jouw reis</div>
+              </div>
+              <div class="wf-list-action" style="font-size:16px;">✓</div>
+            </div>
+            <div class="wf-btn" style="width:100%; text-align:center; display:block;">Reis aanmaken →</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>NIP-52 Calendar Event.</strong> GansjeTippy actief by default. Reis wordt publiek gedeeld zodat Folly en Bro kunnen reageren.</div>
+    </div>
+
+    <!-- S-10 BUCKETLIST -->
+    <div class="wireframe-card" id="s10">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-10</div>
+          <div class="wireframe-name">Bucketlist</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/bucketlist</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-tabs">
+              <div class="wf-tab active">Sofia 🇧🇬</div>
+              <div class="wf-tab">Alle reizen</div>
+              <div class="wf-tab">Voltooid ✓</div>
+            </div>
+            <div class="wf-list">
+              <div class="wf-list-item" style="border-color:rgba(0,212,170,0.3);">
+                <div class="wf-list-icon">🏛️</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Zhenski Pazar — vroeg ochtend</div>
+                  <div class="wf-list-sub">👥 Vrienden · ⚡ 500 sats uitdaging van Bro</div>
+                </div>
+                <div class="wf-list-action" style="color:var(--accent3);">✓</div>
+              </div>
+              <div class="wf-list-item">
+                <div class="wf-list-icon">⛪</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Dragalevtsi Klooster</div>
+                  <div class="wf-list-sub">🌍 Publiek · Nog te doen</div>
+                </div>
+                <div class="wf-list-action">→</div>
+              </div>
+              <div class="wf-list-item">
+                <div class="wf-list-icon">🎵</div>
+                <div class="wf-list-content">
+                  <div class="wf-list-title">Bar achter NHM — donderdag</div>
+                  <div class="wf-list-sub">🔒 Privé · Tip van Folly</div>
+                </div>
+                <div class="wf-list-action">→</div>
+              </div>
+            </div>
+            <div class="wf-btn secondary" style="width:100%; text-align:center; display:block;">+ Item toevoegen</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>NIP-51 List.</strong> Privacy per item zichtbaar. Uitdagingen direct zichtbaar. Voltooid tab voor gans collectie overzicht.</div>
+    </div>
+
+    <!-- S-14 PROFIEL -->
+    <div class="wireframe-card" id="s14">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-14</div>
+          <div class="wireframe-name">Profiel</div>
+        </div>
+        <div class="wireframe-persona">Travy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/profile/travy</div>
+          </div>
+          <div class="browser-content">
+            <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+              <div style="width:40px; height:40px; border-radius:50%; background:var(--surface2); border:2px solid var(--accent); display:flex; align-items:center; justify-content:center; font-size:18px;">🎒</div>
+              <div>
+                <div style="font-size:14px; font-weight:700;">Travy</div>
+                <div style="font-size:10px; color:var(--text-muted); font-family:'Space Mono',monospace;">npub1abc...xyz</div>
+              </div>
+            </div>
+            <div class="wf-stats">
+              <div class="wf-stat"><div class="wf-stat-num">12</div><div class="wf-stat-label">Gansen</div></div>
+              <div class="wf-stat"><div class="wf-stat-num">8</div><div class="wf-stat-label">Check-ins</div></div>
+              <div class="wf-stat"><div class="wf-stat-num">3.2k</div><div class="wf-stat-label">Sats</div></div>
+            </div>
+            <div class="wf-section-label">Ganzencollectie</div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;">
+              <div style="font-size:24px;" title="Marktgans Sofia ⭐⭐">🪿</div>
+              <div style="font-size:24px;" title="Welkomstgans">🪿</div>
+              <div style="font-size:24px; opacity:0.4;" title="Zeldzame gans — vergrendeld">🪿</div>
+            </div>
+            <div class="wf-section-label">Reputatie</div>
+            <div class="wf-list-item">
+              <div class="wf-list-icon">🏷️</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">Stamper niveau 2</div>
+                <div class="wf-list-sub">3 actieve verificatiepunten</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Nostr profiel.</strong> npub zichtbaar — draagbaar naar elk Nostr platform. Gansen tonen zeldzaamheid. Reputatie opgebouwd over tijd.</div>
+    </div>
+
+    <!-- S-17 LOCATIE AANMAKEN -->
+    <div class="wireframe-card" id="s17">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-17</div>
+          <div class="wireframe-name">Locatie Aanmaken</div>
+        </div>
+        <div class="wireframe-persona">Travy als Tippy</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/place/new</div>
+          </div>
+          <div class="browser-content">
+            <div class="wf-input focus">Naam: Ivo's Koffiehuis</div>
+            <div class="wf-list-item" style="margin-bottom:8px;">
+              <div class="wf-list-icon">📍</div>
+              <div class="wf-list-content">
+                <div class="wf-list-title">GPS automatisch ingevuld</div>
+                <div class="wf-list-sub" style="color:var(--accent3);">42.6977° N, 23.3219° E</div>
+              </div>
+            </div>
+            <div class="wf-input">Beschrijving (optioneel)</div>
+            <div class="wf-goose" style="margin-bottom:10px;">
+              <div class="wf-goose-emoji">🪿👑</div>
+              <div class="wf-goose-title">Jij ontvangt de Founding Gans!</div>
+              <div class="wf-goose-sub">Eerste bezoeker van deze locatie — voor altijd</div>
+            </div>
+            <div class="wf-alert">📤 Na aanmaken krijg je een kaartje om te delen met de eigenaar.</div>
+            <div class="wf-btn" style="width:100%; text-align:center; display:block;">Locatie aanmaken →</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Founding Gans.</strong> Zeldzaamste gans. GPS automatisch. Deelbaar kaartje voor eigenaar direct na aanmaken — via print, WhatsApp of Nostr DM.</div>
+    </div>
+
+    <!-- S-19 HORECA CLAIM -->
+    <div class="wireframe-card" id="s19">
+      <div class="wireframe-header">
+        <div>
+          <div class="wireframe-num">S-19</div>
+          <div class="wireframe-name">Horeca Claim</div>
+        </div>
+        <div class="wireframe-persona">Horeca</div>
+      </div>
+      <div class="wireframe-body">
+        <div class="browser">
+          <div class="browser-bar">
+            <div class="browser-dots"><span></span><span></span><span></span></div>
+            <div class="browser-url">idid.here/claim/ivos-koffiehuis</div>
+          </div>
+          <div class="browser-content">
+            <div style="font-size:14px; font-weight:700; margin-bottom:4px;">Ivo's Koffiehuis</div>
+            <div style="font-size:10px; color:var(--text-muted); margin-bottom:12px;">Sofia · NDK Plein omgeving</div>
+            <div class="wf-stats" style="margin-bottom:12px;">
+              <div class="wf-stat"><div class="wf-stat-num">7</div><div class="wf-stat-label">Bezoekers</div></div>
+              <div class="wf-stat"><div class="wf-stat-num">2.1k</div><div class="wf-stat-label">Sats wachten</div></div>
+              <div class="wf-stat"><div class="wf-stat-num">14d</div><div class="wf-stat-label">Resterend</div></div>
+            </div>
+            <div class="wf-alert">⚡ Je hebt 2.100 sats ontvangen van bezoekers. Claim je account om ze te ontvangen.</div>
+            <div class="wf-input">Bewijs eigenaarschap — KvK of adres</div>
+            <div class="wf-btn green" style="width:100%; text-align:center; display:block; margin-bottom:6px;">Account claimen →</div>
+            <div style="font-size:9px; color:var(--text-muted); text-align:center;">Geen Bitcoin kennis vereist · Lightning wallet wordt aangemaakt via Alby</div>
+          </div>
+        </div>
+      </div>
+      <div class="screen-notes"><strong>Sterkste salespitch.</strong> "Je geld wacht op je." Geen technisch jargon. Timer toont urgentie. Alby onboarding volledig achter de schermen.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(name).classList.add('active');
+    document.querySelectorAll('nav button').forEach(b => {
+      if (b.textContent.toLowerCase().includes(name === 'flow' ? 'flow' : 'wire')) {
+        b.classList.add('active');
+      }
+    });
+  }
+
+  function scrollTo(id) {
+    setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }, 100);
+  }
+</script>
+
+</body>
+</html>
